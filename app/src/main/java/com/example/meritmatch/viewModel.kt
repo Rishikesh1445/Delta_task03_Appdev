@@ -12,12 +12,14 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.meritmatch.sealedClass.LoginScreen
 import com.example.meritmatch.dataClass.CurrentUser
+import com.example.meritmatch.dataClass.Notification
 import com.example.meritmatch.dataClass.SpintheWheel
 import com.example.meritmatch.retrofit.dataclass.GameSpin
 import com.example.meritmatch.retrofit.dataclass.Task
 import com.example.meritmatch.retrofit.dataclass.UserId
 import com.example.meritmatch.retrofit.dataclass.addtask
 import com.example.meritmatch.retrofit.dataclass.logIn
+import com.example.meritmatch.retrofit.dataclass.notify
 import com.example.meritmatch.retrofit.dataclass.rate
 import com.example.meritmatch.retrofit.dataclass.transactionRequest
 import com.example.meritmatch.retrofit.retroFitInstance
@@ -35,10 +37,13 @@ import kotlin.random.Random
 
 class AppViewModel:ViewModel(){
     private val _user = mutableStateOf(CurrentUser())
-    val user: State<CurrentUser> =_user
+    val user : State<CurrentUser> =_user
 
     private val _game = mutableStateOf(SpintheWheel())
     val game : State<SpintheWheel> = _game
+
+    private val _notify = mutableStateOf(Notification())
+    val notify : State<Notification> = _notify
 
     fun signUp(username:String, password:String, loginNav:NavController, context: Context){
         val data = logIn(username, password)
@@ -155,6 +160,7 @@ class AppViewModel:ViewModel(){
                 if (response != null) {
                     if (response.code() == 200){
                         _user.value = response.body()?.let { _user.value.copy(ptasks = it) }!!
+                        notification()
                     }
                 }
             }catch (e:Exception){
@@ -354,6 +360,33 @@ class AppViewModel:ViewModel(){
                 _game.value = _game.value.copy(played = true)
             }else{
                 Toast.makeText(context, "Already played", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun notification(){
+        var notificationList = listOf(0)
+        for(task in user.value.ptasks){
+            if(task.reserved && task.id !in notify.value.alreadySeen){
+                notificationList = notificationList + listOf(task.id)
+            }
+        }
+        val toApi = notificationList.map { notify(it) }
+        _notify.value = _notify.value.copy(toShow = notificationList, alreadySeen = notify.value.alreadySeen + notificationList, forApi = toApi)
+        Log.d("notificationss", notificationList.toString())
+    }
+
+    fun editNotificationDatabase(){
+        viewModelScope.launch {
+            delay(1000)
+            //not needed this delay, just for sake
+            try {
+                val response = retroFitInstance.api.notify(notify.value.forApi)
+                if(response.code()==200){
+                    response.body()?.let { Log.d("notificationss", it.message) }
+                }
+            }catch (e:Exception){
+                e.message?.let { Log.d("notificationss", "error: $it") }
             }
         }
     }

@@ -30,6 +30,7 @@ fun Account(viewModel: AppViewModel){
         viewModel.fetchPostedTask()
         viewModel.fetchReservedTask()
         viewModel.fetchCompletedTask()
+        viewModel.editNotificationDatabase()
     }
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "profile picture", tint = Color.Green,

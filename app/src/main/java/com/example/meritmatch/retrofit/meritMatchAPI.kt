@@ -8,6 +8,7 @@ import com.example.meritmatch.retrofit.dataclass.Userdetail
 import com.example.meritmatch.retrofit.dataclass.UsersName
 import com.example.meritmatch.retrofit.dataclass.addtask
 import com.example.meritmatch.retrofit.dataclass.logIn
+import com.example.meritmatch.retrofit.dataclass.notify
 import com.example.meritmatch.retrofit.dataclass.rate
 import com.example.meritmatch.retrofit.dataclass.response
 import com.example.meritmatch.retrofit.dataclass.transactionRequest
@@ -62,4 +63,7 @@ interface meritMatchAPI {
 
     @POST("/extra")
     suspend fun extras(@Body detail:GameSpin): Response<response>
+
+    @POST("/notify")
+    suspend fun notify(@Body ids: List<notify>): Response<response>
 }
