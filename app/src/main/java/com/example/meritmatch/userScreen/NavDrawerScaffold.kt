@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -73,6 +74,7 @@ fun UserScreen(viewModel: AppViewModel, mainNav: NavController){
         NavigationItem(title = "Transactions",route = com.example.meritmatch.UserScreen.transactions.route, selectedIcon = Icons.Filled.Refresh, unselectedIcon = Icons.Outlined.Refresh),
         NavigationItem(title = "Uploaded Tasks", route = com.example.meritmatch.UserScreen.upload.route, selectedIcon = Icons.Filled.Star, unselectedIcon = Icons.Outlined.Star),
         NavigationItem(title = "Search", route = com.example.meritmatch.UserScreen.search.route, selectedIcon = Icons.Filled.Search, unselectedIcon = Icons.Outlined.Search ),
+        NavigationItem(title = "Earn More Points!!", route = com.example.meritmatch.UserScreen.game.route, selectedIcon = Icons.Filled.Star, unselectedIcon = Icons.Outlined.Star),
         NavigationItem(title = "Log Out",route = com.example.meritmatch.UserScreen.logout.route, selectedIcon = Icons.Filled.ExitToApp, unselectedIcon = Icons.Outlined.ExitToApp),
     )
 
@@ -126,6 +128,7 @@ fun UserScreen(viewModel: AppViewModel, mainNav: NavController){
                 composable(com.example.meritmatch.UserScreen.transactions.route){ Transactions(viewModel)}
                 composable(com.example.meritmatch.UserScreen.upload.route){ Uploads(viewModel)}
                 composable(com.example.meritmatch.UserScreen.search.route){ Search(viewModel)}
+                composable(com.example.meritmatch.UserScreen.game.route){game(viewModel)}
                 composable(com.example.meritmatch.UserScreen.logout.route){ mainNav.navigate(ScreenMain.loginPage.route); viewModel.logout() }
             }
         }

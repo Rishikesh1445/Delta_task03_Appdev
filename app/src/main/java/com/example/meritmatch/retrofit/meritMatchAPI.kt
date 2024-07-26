@@ -1,5 +1,6 @@
 package com.example.meritmatch.retrofit
 
+import com.example.meritmatch.retrofit.dataclass.GameSpin
 import com.example.meritmatch.retrofit.dataclass.Task
 import com.example.meritmatch.retrofit.dataclass.TransactionResponse
 import com.example.meritmatch.retrofit.dataclass.UserId
@@ -58,4 +59,7 @@ interface meritMatchAPI {
 
     @POST("/transactions")
     suspend fun transaction(@Body transaction: transactionRequest) : Response<TransactionResponse>
+
+    @POST("/extra")
+    suspend fun extras(@Body detail:GameSpin): Response<response>
 }

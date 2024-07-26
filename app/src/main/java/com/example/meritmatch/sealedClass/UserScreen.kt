@@ -9,4 +9,5 @@ sealed class UserScreen(val route: String) {
     object upload: UserScreen("upload")
     object logout : UserScreen("logout")
     object search : UserScreen("search")
+    object game : UserScreen("game")
 }

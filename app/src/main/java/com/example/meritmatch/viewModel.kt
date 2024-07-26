@@ -3,6 +3,8 @@ package com.example.meritmatch
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -10,6 +12,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.meritmatch.sealedClass.LoginScreen
 import com.example.meritmatch.dataClass.CurrentUser
+import com.example.meritmatch.dataClass.SpintheWheel
+import com.example.meritmatch.retrofit.dataclass.GameSpin
 import com.example.meritmatch.retrofit.dataclass.Task
 import com.example.meritmatch.retrofit.dataclass.UserId
 import com.example.meritmatch.retrofit.dataclass.addtask
@@ -27,10 +31,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class AppViewModel:ViewModel(){
     private val _user = mutableStateOf(CurrentUser())
     val user: State<CurrentUser> =_user
+
+    private val _game = mutableStateOf(SpintheWheel())
+    val game : State<SpintheWheel> = _game
 
     fun signUp(username:String, password:String, loginNav:NavController, context: Context){
         val data = logIn(username, password)
@@ -313,5 +321,40 @@ class AppViewModel:ViewModel(){
 
     fun logout(){
         _user.value = CurrentUser()
+        _game.value = SpintheWheel()
+    }
+
+
+    fun game(context: Context){
+        val randomRotation = Random.nextFloat()*360f*5f
+        viewModelScope.launch{
+            if(!game.value.played) {
+                while (game.value.redRotation < randomRotation && game.value.blueRotation < randomRotation) {
+                    _game.value = _game.value.copy(
+                        redRotation = game.value.redRotation + 1f,
+                        blueRotation = game.value.blueRotation + 1f
+                    )
+                    delay(1)
+                }
+                val red = (90 + game.value.redRotation) % 360f
+                if (red in (0f..90f) || red in (270f..360f)) {
+                    Log.d("gameSpin", "red")
+                    Toast.makeText(context, "Sorry, better luck next time", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    Log.d("gameSpin", "blue")
+                    Toast.makeText(context, "+100 for you my bro", Toast.LENGTH_SHORT).show()
+                    try {
+                        val data = user.value.userid?.let { GameSpin(it, 100) }
+                        val response = data?.let { retroFitInstance.api.extras(it) }
+                    }catch (e:Exception){
+                        e.message?.let { Log.d("gameSpin", "error: $it") }
+                    }
+                }
+                _game.value = _game.value.copy(played = true)
+            }else{
+                Toast.makeText(context, "Already played", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
