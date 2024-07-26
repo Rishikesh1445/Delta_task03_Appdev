@@ -60,7 +60,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserScreen(viewModel: AppViewModel, mainNav: NavController){
+fun UserScreen(viewModel: AppViewModel, mainNav: NavController, notification:()->Unit){
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -121,7 +121,7 @@ fun UserScreen(viewModel: AppViewModel, mainNav: NavController){
 
         ) {
             NavHost(navController = navControllerUser, startDestination = com.example.meritmatch.UserScreen.account.route){
-                composable(com.example.meritmatch.UserScreen.account.route){ Account(viewModel)}
+                composable(com.example.meritmatch.UserScreen.account.route){ Account(viewModel, notification)}
                 composable(com.example.meritmatch.UserScreen.tasks.route){ Tasks(viewModel)}
                 composable(com.example.meritmatch.UserScreen.reserved.route){ Reserved(viewModel)}
                 composable(com.example.meritmatch.UserScreen.completed.route){ Completed(viewModel)}
