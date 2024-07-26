@@ -66,18 +66,18 @@ class MainActivity : ComponentActivity() {
                             loginPage(navControllerMain, context, viewModel)
                         }
                         composable(ScreenMain.userScreen.route){
-                            UserScreen(viewModel, navControllerMain) { showNotification() }
+                            UserScreen(viewModel, navControllerMain) { text -> showNotification(text) }
                         }
                     }
                 }
             }
         }
     }
-    private fun showNotification() {
+    private fun showNotification(text:String) {
         val notification = NotificationCompat.Builder(applicationContext, "channel_id")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Newly Reserved Tasks")
-            .setContentText("This is a description")
+            .setContentText(text)
             .build()
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(1, notification)

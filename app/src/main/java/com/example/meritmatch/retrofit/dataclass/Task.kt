@@ -8,7 +8,8 @@ data class Task(
     val location: String,
     val karmaPoints: Double,
     val reserved: Boolean,
-    val completed: Boolean
+    val completed: Boolean,
+    val shown: Boolean,
 ){
     fun doesMatchSearchQuery(query: String): Boolean{
         val matchingCombinations = listOf(

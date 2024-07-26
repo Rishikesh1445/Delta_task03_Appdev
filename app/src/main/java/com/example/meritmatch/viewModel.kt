@@ -218,7 +218,7 @@ class AppViewModel:ViewModel(){
     }
 
     fun editTask(id:Int, title: String,location: String, description: String, karmaPoints: Double){
-        val data = Task(id, title, description,location, karmaPoints, false, false)
+        val data = Task(id, title, description,location, karmaPoints, false, false, false)
         viewModelScope.launch {
             try {
                 val response = retroFitInstance.api.editTask(data)
@@ -285,7 +285,7 @@ class AppViewModel:ViewModel(){
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-    private var _tasks = MutableStateFlow(listOf(Task(0,"Summa","Summa","",0.0,false,false)))
+    private var _tasks = MutableStateFlow(listOf(Task(0,"Summa","Summa","",0.0,false,false, false)))
     fun stateFLowTasks(){
         val combined = user.value.ctasks + user.value.rtasks + user.value.ptasks + user.value.tasks
         val locationlist = combined.map { it.location }
@@ -328,6 +328,7 @@ class AppViewModel:ViewModel(){
     fun logout(){
         _user.value = CurrentUser()
         _game.value = SpintheWheel()
+        _notify.value = Notification()
     }
 
 
@@ -365,15 +366,24 @@ class AppViewModel:ViewModel(){
     }
 
     fun notification(){
-        var notificationList = listOf(0)
-        for(task in user.value.ptasks){
-            if(task.reserved && task.id !in notify.value.alreadySeen){
-                notificationList = notificationList + listOf(task.id)
+        if(!notify.value.once) {
+            var notificationList = listOf(0)
+            var notificationString = listOf("")
+            for (task in user.value.ptasks) {
+                if (task.reserved && !task.shown) {
+                    notificationList = notificationList + listOf(task.id)
+                    notificationString = notificationString + listOf(task.title)
+                }
             }
+            val toApi = notificationList.map { notify(it) }
+            _notify.value = _notify.value.copy(
+                toShow = notificationList,
+                forApi = toApi,
+                once = true,
+                toShowString = notificationString
+            )
+            Log.d("notificationss", notificationList.toString())
         }
-        val toApi = notificationList.map { notify(it) }
-        _notify.value = _notify.value.copy(toShow = notificationList, alreadySeen = notify.value.alreadySeen + notificationList, forApi = toApi)
-        Log.d("notificationss", notificationList.toString())
     }
 
     fun editNotificationDatabase(){

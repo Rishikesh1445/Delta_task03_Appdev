@@ -19,9 +19,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.meritmatch.AppViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun Account(viewModel: AppViewModel, notifcationFunction:()->Unit ){
+fun Account(viewModel: AppViewModel, notifcationFunction:(text:String)->Unit ){
     LaunchedEffect(Unit){
         viewModel.userdetails()
         viewModel.fetchTask()
@@ -29,7 +30,6 @@ fun Account(viewModel: AppViewModel, notifcationFunction:()->Unit ){
         viewModel.fetchReservedTask()
         viewModel.fetchCompletedTask()
         viewModel.editNotificationDatabase()
-        notifcationFunction()
     }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -116,6 +116,13 @@ fun Account(viewModel: AppViewModel, notifcationFunction:()->Unit ){
                 fontSize = 20.sp,
                 modifier = Modifier.padding(16.dp)
             )
+        }
+    }
+
+    LaunchedEffect(Unit){
+        delay(2000)
+        if(viewModel.notify.value.toShowString.size>1){
+            notifcationFunction(" Reserved Tasks: ${viewModel.notify.value.toShowString.toString()}")
         }
     }
 }
